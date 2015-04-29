@@ -1,0 +1,10 @@
+MSS_TestSets-1.txt was used to test our code.  This file has been translated into 
+python manually within the data.py file.
+
+All algoritms have been imported to our test file.  To run all programs, including
+automatically iterating through the arrays within MSS_Problems.txt to create an
+ouput file of MSS_Results.txt, can be accomplished by typing 'python test_correct.py'
+into the command line.  This will print out the results of our tests straight to the 
+terminal, as well as output the results of MSS_Problems.txt on each algorithm to a new
+file, MSS_Results.txt.  Please check your current directory for that file at the 
+completion of running the program. 

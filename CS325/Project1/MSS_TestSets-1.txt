@@ -1,0 +1,33 @@
+Use these test cases to test the output of your algorithms
+
+Original Array : 1, 4, -9, 8, 1, 3, 3, 1, -1, -4, -6, 2, 8, 19, -10, -11 
+Subarray 8, 1, 3, 3, 1, -1, -4, -6, 2, 8, 19
+Max sum: 34
+
+Original Array : 2, 9, 8, 6, 5, -11, 9, -11, 7 5, -1, -8, -3, 7 -2
+Subarray 2, 9, 8, 6, 5
+Max sum: 30
+
+Original Array : 10, -11, -1, -9, 33,-45, 23, 24, -1, -7 -8, 19 
+Subarray 23,24, -1, -7, -8, 19
+Max sum: 50
+
+Original Array : 31,-41, 59, 26, -53, 58, 97, -93, -23, 84 
+Subarray 59, 26, -53, 58, 97
+Max sum: 187
+
+Original Array : 3, 2, 1, 1,-8, 1,1,2, 3
+Subarray 3, 2, 1,1
+Max sum: 7
+
+Original Array : 12, 99, 99, -99, -27, 0, 0, 0, -3,10 
+Subarray 12, 99, 99
+Max sum: 210
+
+Original Array : -2, 1,-3, 4, -1, 2, 1,-5, 4 
+Subarray 4, -1, 2, 1
+Max sum: 6
+
+Original Array : -1, -3, -5 
+Subarray (empty)
+Max sum: 0   ****  Note at least one value in the array must be positive
