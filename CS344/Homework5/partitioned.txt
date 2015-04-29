@@ -1,0 +1,27 @@
+Megan Conley
+conleyme@onid.oregonstate.edu
+CS344 400
+Homework5
+
+I split up the work of marking primes by dividing the number of slots by the 
+number of threads/processes. The code looks like this for the multi=process version:
+
+        for(int i = 0; i < num_procs; i++) {
+                if(t_remainder > 0) {
+			t_remainder--;
+                        procs.start = offset;
+                        offset += (split + 1) * CHAR_BIT;
+                        procs.end = offset + 1;
+                } else {
+                        procs.start = offset;
+                        offset += split * CHAR_BIT;
+                        procs.end = offset - 1;
+                }
+                procs.index = i;
+
+	After this, it either forks the processes or joins the threads. It
+sets the offset for the remainders first. The offset is moved by the number of
+bits handled per process.
+
+	The index field was just used for my own testing, to ensure the threads/processes 
+had equal amounts of work and to check what they were working on.

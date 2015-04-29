@@ -1,0 +1,17 @@
+Megan Conley
+conlyme@onid.oregonstate.edu
+CS344-400
+Homework 2
+
+
+(gdb) run bt
+Starting program: /nfs/stak/students/c/conleyme/cs344/Problem8 bt
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000000000040049c in func (ptr=0x0) at Problem8.c:8
+8       ptr[i] = i;
+Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.132.el6.x86_64
+(gdb) print ptr
+$1 = (int *) 0x0
+(gdb) print i
+$2 = 0
