@@ -1,0 +1,62 @@
+#bg {
+	position: relative;
+	left: 0px;
+	background-color: #eee;
+	width: 420px;
+	height: 670px;
+}
+
+
+#red {
+	position: absolute;
+	background-color: red;
+	height: 100px;
+	width: 15%;
+	top: 20px;
+	left: 5%;
+}
+
+#orange {
+	position: absolute;
+	background-color: orange;
+	height: 100px;
+	width: 50%;
+	top: 20px;
+	left: 30%;
+}
+
+#yellow {
+	position: absolute;
+	background-color: yellow;
+	height: 200px;
+	width: 50px;
+	left: 100px;
+	top: 195px;
+}
+
+#green {
+	position: absolute;
+	background-color: green;
+	height: 200px;
+	width: 150px;
+	left: 170px;
+	top: 195px;
+}
+
+#blue {
+	position: absolute;
+	bottom: 0px;
+	background-color: blue;
+	height: 200px;
+	width: 50px;
+	right: 190px;
+}
+
+#indigo {
+	position: absolute;
+	bottom: 0px;
+	background-color: indigo;
+	height: 200px;
+	width: 150px;
+	right: 20px;
+}

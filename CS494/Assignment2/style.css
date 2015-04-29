@@ -1,0 +1,82 @@
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	empty-cells: show;
+}
+
+th:first-child {
+	font-style: italic;
+}
+
+td:nth-child(2) {
+	color: red;
+}
+
+td:nth-child(4) {
+	color: blue;
+}
+
+dt:hover + dd {
+	background-color: purple;
+}
+
+br {
+	clear: left;
+}
+
+div {
+	display: inline-block;
+}
+
+#red {
+	float: left;
+	background-color: red;
+	height: 100px;
+	width: 15%;
+	top: 20px;
+	margin-left: 5%;
+}
+
+#orange {
+	position: relative;
+	background-color: orange;
+	height: 100px;
+	width: 50%;
+	left: 10%
+}
+
+#yellow {
+	float: center;
+	background-color: yellow;
+	height: 200px;
+	width: 50px;
+	margin-left: 100px;
+	margin-top: 75px;
+}
+
+#green {
+	position: relative;
+	background-color: green;
+	height: 200px;
+	width: 150px;
+	left: 20px;
+}
+
+
+#indigo {
+	float: right;
+	background-color: indigo;
+	height: 200px;
+	width: 150px;
+	margin-right: 100px;
+	margin-top: 75px;
+	margin-left: 20px;
+}
+
+#blue {
+	float: right;
+	background-color: blue;
+	height: 200px;
+	width: 50px;
+	margin-top: 75px;
+}

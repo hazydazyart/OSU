@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>CCDB Documentation</title>
+        <script src = "/ccdbutils.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+<div class = "main">
+	<h1><p>The Chinese Character Web API Documentation<p></h1>
+
+	<h3><p>What is it?</p></h3>
+
+	<p>The <a href="ccdb.hemiola.com">Chinese Character Web API</a> is a simple tool to get information about Chinese characters. There are many filtering options to limit by stroke count, radical, or to get Pinyin or definitions. It pulls data from the Unicode Standard Annex #38, Unicode Han Database, or Unihan for short.</p>
+
+	<p>The API is the work of <a href="http://com.hemiola.com/">Jens-Ingo Farley.</a></p>
+
+	<h3><p>Why use it?<p></h3>
+
+	<p>This tool is useful as a basis for another program - the creator, for example, has used the data from this tool to create a separate program to sort and view Chinese characters in much the same way. Classrooms or students of Chinese could also benefit from a quick way to look up characters, sounds, or meanings when the interest is more broad than definitions.</p>
+
+	<p>It was designed to be simple to use - while it is RESTlike, it simply uses JSON to return the data, which can then be displayed as-is or converted into romanized versions with the utility functions which apply diacritics for you.</p>
+
+	<h3><p>Getting Started<p></h3>
+
+	<div class="code">
+	<ul>
+		<li><a href="data.html">Structure of JSON Responses</a></li>
+		<li><a href="filter.html">Filtering results</a></li>
+		<li><a href="parse.html">Parsing and Displaying Data</a></li>
+		<li><a href="utility.html">Utility Functions</a></li>
+	</ul>
+	</div>
+
+	<p>Select the appropriate section above to learn about how to use the API. If you are new to this API, I suggest beginning at the first section and continuing on.</p>
+
+	<p><b>Structure of JSON Responses</b> is an introduction to the sort of data that will be returned by various requests. As the fields are not entirely intuitive, it is a good idea to familiarize yourself with the fields you will most likely be using to avoid constantly looking up what the response will be.</p>
+
+	<p><b>Filtering Results</b> goes over how to refine the responses to return the desired fields, such as pronunciations, strings, or definitions, or to filter the results by database section or character type.</p>
+
+	<p><b>Parsing and Displaying Data</b> is a quick-start guide for using the data and displaying it in human-readable forms, and suggestions for how to utilize the data.</p>
+
+	<p>Finally, the <b>Utility Functions</b> provided by the creator are included for reference with brief explanation of what they do and their best uses.</p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>CCDB Documentation</title>
+        <script src = "/ccdbutils.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div class="main">
+	<h1><p>Getting started with the API</p></h1>
+
+	<h3><p>The Data</p></h3>
+
+	<p>Before you can start using the API, take the time to get familiar with the sort of data it returns. You can view the raw JSON response by visiting the page with your desired filter settings. They are not necessarily the most intuitive, so I will go over a few of them here.
+
+	<h3><p>Unicode responses<p></h3>
+
+	<p>Unicode responses will return the actual Chinese character in Unicode. Most modern browsers should be able to display these, but some may require the user to alter the encoding setting.<p>
+
+	<p>From the <a href="ccdb.hemiola.com">API's website</a>, here is a list of the ranges of Unicode that correspond to Chinese:
+
+	<div class="code">
+	<ul>
+ 	   <li>U+3400 through U+4DFF (6,656): CJK Unified Ideographs Extension A</li>
+ 	   <li>U+4E00 through U+9FFF (20,992): CJK Unified Ideographs</li>
+ 	   <li>U+F900 through U+FAFF (512): CJK Compatibility Ideographs</li>
+ 	   <li>U+20000 through U+2F7FF (63,488): CJK Unified Ideographs Extension B</li>
+ 	   <li>U+2F800 through U+2FFFF (2,048): CJK Compatibility Ideographs Supplement</li>
+	</ul>
+	</div>
+
+	<p>Of these, the most commonly used will be the CJK Unified Ideographs containing the common-use characters.</p>
+
+	<p>A request that returns these will look something like this:</p>
+
+	<div class = "code">http://ccdb.hemiola.com/characters/radicals/85</div>
+
+	<p>This requests all characters that use the radical 85. The JSON response is an array of string fields, each populated with the Unicode escape code for that character.</p>
+
+	<div class = "code">[{"string":"\u51fc"},{"string":"\u6c34"},{"string":"\u6c35"},{"string":"\u6c36"},{"string":"\u6c37"}, (...)</div>
+
+	<p>When parsing the JSON response, you can iterate through and select each by accessing the 'string'.</p>
+
+	<h3><p>Sound responses</p></h3>
+
+	<p>The sounds portion of the database is a pronunciation guide. There are several options for requesting the pronunciation of a character:</p>
+
+	<div class="code">
+	<ul>
+ 	    <li>List of sounds found in Mandarin or Cantonese without tone</li>
+	    <li>List of sounds found in Mandarin or Cantonese with tone</li>
+  	   <li>List of sounds of Japanese on and kun readings</li>
+		<li>List of sounds of Tang dynasty era readings</li>
+		<li>List of sounds found in modern Vienamese readings</li>
+	</ul>
+	</div>
+
+	<p>This request will return a list of pinyin syllables with or without tone depending on what was requested. Also included will be a count of how many characters have this sound. The count numbers are more accurate for those including tones, as, for example, "A1", "A2", "A3", "A4", and "A5" will be collapsed into a single count for "A" if tones are not requested.</p>
+
+	<p>An example response from a request for Mandarin tones will be:</p>
+
+	<div class = "code">[{"kMandarin":"A1","count":5},{"kMandarin":"A2","count":1},{"kMandarin":"A3","count":1}(...)]</div>
+
+	<p>The count field is not nearly as useful as the kMandrain field, which can then be used to convert the values to <a href="http://en.wikipedia.org/wiki/Pinyin">Pinyin</a> or <a href="http://en.wikipedia.org/wiki/Yale_romanization_of_Cantonese">Yale</a> romanizations. Of course, the count field could be useful for linguistic research, but is not used with any other utility functions in this API.</p>
+
+	<h3><p>Strokes and radicals</p></h3>
+
+	<p>The CCDB API supports searches for <a href="http://en.wikipedia.org/wiki/Radical_%28Chinese_characters%29">radicals</a> and strokes, and a combination thereof. These are, again, useful for the more academic uses, but may be able to provide useful information.</p>
+
+	<p>Fields used in responses for strokes and radicals are:</p>
+
+	<div class="code">kTotalStrokes: the total number of strokes in a given character<br>
+	strokes: the total strokes for the radical<br>
+	radical: a number assigned to the specified radical, between 1 to 214<br></div>
+
+	<p>Radicals and stroke counts are useful for implementing a search that mimics paper dictionary lookup, and more information on that can be found in the section on <a href="parse.html">parsing.</a></p>
+
+	<h3><p>Definitions</p></h3>
+
+	<p>Definitions, particularly when combined with the API's more robust sound and character filtering capabilities, will likely be the most used request. The definition is requested by appending the relevant field to the URL after your filters. It is contained in the "kDefinition" field. An example request to include definitions for all characters that use radical 85:</p>
+
+	<div class = "code">ccdb.hemiola.com/characters/radicals/85?field=string,kDefinition</div>
+
+	<p>This request would then return the following JSON response:</p>
+
+	<div class = "code">[{"string":"\u51fc","kDefinition":"ditch; pool"},{"string":"\u6c34","kDefinition":"water, liquid, lotion, juice"},(...)]</div>
+
+	<h3><p>Miscellaneous</p></h3>
+
+	<p>Other fields return data of interest that is not necessarily useful, such as dictionary indices or total counts of responses for the data returned. Review the <a href="http://www.unicode.org/reports/tr38/">Unihan home page</a> for a complete, detailed list of all fields this API can return.</p>
+
+	<a href="main.html">Back to Main</a> - <a href="filter.html">Filtering Results</a> 
+
+</div>
+</body>
+</html>
+

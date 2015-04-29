@@ -1,0 +1,91 @@
+		
+			<p>Create a new team by entering a unique numerical identifier for your list.<br>
+			
+				Then add new Pokemon using the dropdown menu.<br>
+
+				You can remove a Pokemon by hitting the delete button on that row.<br>
+				
+				A team can be at most 6 Pokemon, so choose wisely!<br>
+			</p>
+			
+			<p>
+			<b>Create a List here:</b>
+			<form method ="post" action ="team_list.php">
+			<b>List ID:</b><input type="text" name ="newlistid">
+			<input type="submit" name="add_list" value = "Create List"/>
+			</form>
+			</p>
+			
+			<p>
+			<b>Add A Pokemon to A List</b>
+			<form method="post" action = "add_pkmn.php">
+			<b>Pokemon</b>
+			<select name="pkmn">
+				<?php
+				if(!($stmt = $mysqli->prepare("SELECT number, name FROM pokemon ORDER BY name ASC"))){
+						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+				}
+
+				if(!$stmt->execute()){
+						echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+				}
+				if(!$stmt->bind_result($id, $name)){
+						echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+				}
+				while($stmt->fetch()){
+				 echo '<option value=" '. $id . ' "> ' . $name . '</option>\n';
+				}
+				$stmt->close();
+				?>
+			</select>
+			<b>List</b>
+			<select name ="listid">
+				<?php
+				if(!($stmt = $mysqli->prepare("SELECT listid FROM team_list WHERE userid = (SELECT id FROM usernames WHERE name = $user"))){
+						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+				}
+				if(!$stmt->execute()){
+						echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+				}
+				if(!$stmt->bind_result($id)){
+						echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+				}
+				while($stmt->fetch()) {
+				 echo '<option value=" '. $id . ' "> ' . $id . '</option>\n';
+				}
+				$stmt->close();
+				?>		
+			<input type="submit" value="Add Pokemon to List" />
+			</form>
+			
+			<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset="utf-8">
+        <title>Pokemon Team Builder</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="ajax_verify.js"></script>
+	</head>
+
+<body>
+<div class ="main">
+
+	<h1>The Pokemon Team Builder</h1>
+
+	<?php
+	if(!$isnull && !$isnotnum && !$errors) { ?>
+	<p>List created succesfully! Click <a href="create_list.php">here</a> to create a new list or to add Pokemon to your list.</p>
+	<?php 
+	} else {
+		if($isnull) { ?>
+			<div class="error">Error: please enter a value. Click <a href="create_list.php">here</a> to try again.</div>
+		<?php 
+		}
+		if($isnotnum) { ?>
+			<div class="error">Error: value must be a number. Click <a href="create_list.php">here</a> to try again.</div>
+		<?php 
+		}
+	} ?>
+	</div>
+</body>
+</html>

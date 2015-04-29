@@ -1,0 +1,51 @@
+<!Megan Conley - conleyme@ - CS494 400>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Local Weather Forecast</title>
+	<script src="weather.js"></script>
+</head>
+<body>
+	<section>
+	<h5>Get Today's Weather</h5>
+	<form action="" method="get" name="weatherReport">
+	<div>
+		<label>City</label>
+		<input type="text" name="city-name" id = "cityName">
+	</div>
+	<div>
+		<label>State</label>
+		<select name="state-select" id = "stateName">
+			<option value =",Or">Oregon</option>
+			<option value =",Wa">Washington</option>
+			<option value =",Ca">California</option>
+		</select>
+	</div>
+	<div>
+		<label>Maximum Temperature</label>
+		<input type="checkbox" name="max-temp-ok" id = "max">
+		<label>Minimum Temperature</label>
+		<input type="checkbox" name="min-temp-ok" id = "min">
+		<label>Current Temperature</label>
+		<input type="checkbox" name="cur-temp-ok" id = "cur">
+		<label>Wind</label>
+		<input type="checkbox" name="wind-ok" id = "wind">
+	</div>
+	<input type="button" name="save" onclick="saveSettings()" value="Save Settings">
+	<input type="button" name="clear" onclick="clearSettings()" value="Clear Settings">
+	<input type="button" name="display" onclick="getWeather()" value="Show Weather">
+	</form>
+	</section>
+	<section>
+		<h1>Weather Report</h1>
+		<b>City</b> <div id = "cityOutput"></div>
+		<b>Wind Speed</b> <div id = "windSpd"></div>
+		<b>Wind Direction</b> <div id = "windNWSE"></div>
+		<b>Maximum Temperature</b> <div id = "maxOutput"></div>
+		<b>Minimum Temperature</b> <div id = "minOutput"></div>
+		<b>Current Temperature</b> <div id = "curTOutput"></div>
+	</section>
+</body>
+</html>

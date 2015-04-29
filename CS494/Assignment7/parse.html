@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>CCDB Documentation</title>
+        <script src = "ccdbutils.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+<div class="main">
+	<h1><p>Parsing the Data</p></h1>
+
+	<p>Parsing the data was designed to be simple - Javascript supports several methods of parsing JSON responses such as JSON.stringify and JSON.parse. Should you use jQuery, additional options are available to ensure compatibility with various browsers. For the purpose of this tutorial, we will assume all Javascript will be used, with any variations up to the reader to research and implement as best suits their project.</p>
+
+	<p>First, we can examine how to display the characters.</p>
+
+	<h3><p>Parsing Characters<p></h3>
+
+	<p>Before we start jumping into the utility functions, let's practice getting a response from the database and displaying the results in a table. I've chosen a request that returns a small amount of characters to illustrate our example:</p>
+
+	<div class ="code"><p>http://ccdb.hemiola.com/characters/radicals/200?filter=gb</p></div>
+
+	<p>The raw JSON response for this request is as follows:</p>
+
+	<div class="code"><p>[{"string":"\u9ebb"},{"string":"\u9ebd"},{"string":"\u9ebe"}]</p></div>
+
+	<p>As we did not specify any fields, we received the default for a character request which is a 'string.'</p>
+
+	<p>Parsing this response is as simple as making an XMLHttpRequest() and running the response text through JSON.parse, such as this:</p>
+
+	<div class = "code">
+	var xmlhttp = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/sounds/mandarin/with-pitch";<br>
+	<br>
+	xmlhttp.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {<br>
+	&emsp;&emsp;myFunction(xmlhttp.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp.open("GET", url, true);<br>
+	xmlhttp.send();<br>
+	<br>
+	function myFunction(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+	<br>
+	&emsp;for(i = 0; i < arr.length; i++) {<br>
+	&emsp;out += arr[i].string + " ";<br>
+	&emsp; }<br>
+	&emsp;&emsp;document.getElementById("id").innerHTML = out;<br>
+	}<br>
+	</div>
+	<p>This will print the series of characters returned by our response separated by spaces, which will look like this:</p>
+
+	<script>
+	var xmlhttp2 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/200?field=string";
+
+	xmlhttp2.onreadystatechange=function() {
+	    if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
+		parseChar(xmlhttp2.responseText);
+	    }
+	}
+	xmlhttp2.open("GET", url, true);
+	xmlhttp2.send();
+
+	function parseChar(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "";
+
+	    for(i = 0; i < arr.length; i++) {
+	    var text = arr[i].string;
+		out += text + " ";
+	    }
+	    document.getElementById("id02").innerHTML = out;
+	}
+	</script>
+
+	<div id="id02" class="code"></div>
+
+	<p>As the 'string' field returns a Unicode escape character, it automatically displays as the Chinese character provided the user's browser has the correct encoding set.</p>
+
+	<p>This is the extent of what can be done with a string response. While there is a utilty function to provide the Unicode in U+ format provided in the <a href="utlity.html">Utility Functions</a> section, its use is limited.</p>
+
+	<h3><p>Parsing Sounds</p></h3>
+
+	<p>Sounds can be returned as with or without tone; this tutorial will focus on requests with tones to illustrate the romanization features of the API.</p>
+
+	<p>Sounds - or pronunciations - are returned in the format of the syllable in all capitals with a number appended to signify the <a href="http://en.wikipedia.org/wiki/Standard_Chinese_phonology">tone</a> of that sound. A brief primer on tones, since only someone with a linguistics degree can follow that Wikipedia page:</p>
+
+	<ul>
+		<li>Tone 1: Non-dynamic high tone, meaning it is higher relative to the normal tone of voice. This is indicated by a flat bar diacritic over the syllable's vowel.</li>
+		<li>Tone 2: Low-to-high rising tone, which starts at roughly the normal tone of voice and rises to high. This is indicated by a /-shaped diacritic.</li>
+		<li>Tone 3: Mid-low-high tone, which starts at normal tone, dips slightly lower, and finishes high. This is indicated by a v-shaped diacritic.</li>
+		<li>Tone 4: Mid-to-lower falling tone, which starts at roughly the normal tone of voice and falls lower. This is indicated by a downward slanting diacritic.</li>
+		<li>Tone 5: A neutral tone with no diacritic</li>
+	</ul>
+
+	<p>To illustrate this, let's see an example of passing the kMandarin field to the convertPinyin(value) function.</p>
+
+	<div class="code">
+	var xmlhttp = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/sounds/mandarin/with-pitch";<br>
+	<br>
+	xmlhttp.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {<br>
+	&emsp;&emsp;parseSounds(xmlhttp.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp.open("GET", url, true);<br>
+	xmlhttp.send();<br>
+	<br>
+	function parseSounds(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+	    <br>
+	&emsp;for(i = 0; i < 4; i++) {<br>
+	&emsp;var pinyin = convertPinyin(arr[i].kMandarin);<br>
+	&emsp;var raw = arr[i].kMandarin;<br>
+	&emsp;&emsp;out += raw + " = " + pinyin + ", ";<br>
+	    }<br>
+	&emsp;out += arr[4].kMandarin + " = " + convertPinyin(arr[4].kMandarin);<br>
+	&emsp;document.getElementById("id01").innerHTML = out;<br>
+	}<br>
+	</div>
+
+	<p>To cut down on length, the example gives the first 5 responses only. Luckily, the first 5 responses show each of the 5 different tones. On the left is the raw response - what is contained in the JSON response. On the right of the equal sign is the kMandarin sound converted to standard Pinyin.</p>
+
+	<script>
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/sounds/mandarin/with-pitch";
+	
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			parseSounds(xmlhttp.responseText);
+		}
+	}
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
+	
+	function parseSounds(response) {
+		var arr = JSON.parse(response);
+		var i;
+		var out = "";
+		for(i = 0; i < 4; i++) {
+			var pinyin = convertPinyin(arr[i].kMandarin);
+			var raw = arr[i].kMandarin;
+			out += raw + " = " + pinyin + ", ";
+		}
+		out += arr[4].kMandarin + " = " + convertPinyin(arr[4].kMandarin);
+		document.getElementById("id01").innerHTML = out;
+	}
+	</script>
+
+	<div id="id01" class ="code"></div>
+
+	<p>There is also a utlity function that allows you to parse a space separated set of raw sound responses, as there are several characters that have more than one pronunciation. The function used above, convertPinyin(value), gets the tone from the last character in the string and applies it to the syllable it was attached to. If there is more than one syllable, this means only the last one will be converted to Pinyin.</p>
+
+	<p>The first question you might have is, how can I tell if the field will return one syllable or more? Unfortunately, there is no provided way to determine how many sounds will be in each field. Fortunately, there is a simple way to check how many words are in the string, as provided by <a href="http://stackoverflow.com/questions/6543917/count-number-of-word-from-given-string-using-javascript">this StackOverflow question</a>. Essentially, you check for how many times the string can be split by spaces - a quick way to get a word count without iterating through the string to count spaces. Here's an example, going back to Mandarin, of all characters that include radical 90:</p>
+
+	<div class="code">[{"kMandarin":"QIANG2"},{"kMandarin":"JIANG1 JIANG4 QIANG1"},{"kMandarin":"QIANG2 PAN2"},{"kMandarin":"CHUANG2"},{"kMandarin":"GE1"},{"kMandarin":"ZANG1"},{"kMandarin":"DIE2"},{"kMandarin":"QIANG1"},{"kMandarin":"YONG2"},{"kMandarin":"QIANG2"}]</div>
+
+	<p>Let's adjust our previous function to check for how many words we have before passing them to the appropriate function - either convertYale(value) for one, or convertSoundsYale(value) for multiple.</p>
+
+	<div class="code">
+	var xmlhttp4 = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/characters/radicals/90?fields=kMandarin";<br>
+	<br>
+	xmlhttp4.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp4.readyState == 4 && xmlhttp4.status == 200) {<br>
+	&emsp;parseMultSounds(xmlhttp4.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp4.open("GET", url, true);<br>
+	xmlhttp4.send();<br>
+	<br>
+	function parseMultSounds(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+		<br>
+	&emsp;for(i = 0; i < arr.length; i++) {<br>
+	&emsp;&emsp;var raw = arr[i].kMandarin;<br>
+	&emsp;&emsp;if (raw.split(/\s+/).length > 1) { /* checks how many times the string<br> 
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;can be split */<br>
+	&emsp;&emsp;&emsp;raw = convertSoundsPinyin(raw);<br>
+	&emsp;&emsp;} else {<br>
+	&emsp;&emsp;&emsp;raw = convertPinyin(raw);<br>
+	&emsp;&emsp;}<br>
+	&emsp;&emsp;&emsp;out += raw + ", ";<br>
+	&emsp;}<br>
+	document.getElementById("id04").innerHTML = out;<br>
+	}<br>
+	</div>
+	<p>It can now handle both the single syllable and multiple syllable fields above, and gives us the following output: </p>
+
+	<div id="id04" class ="code"></div>
+
+	<script>
+	var xmlhttp4 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/90?fields=kMandarin";
+
+	xmlhttp4.onreadystatechange=function() {
+		if (xmlhttp4.readyState == 4 && xmlhttp4.status == 200) {
+		parseMultSounds(xmlhttp4.responseText);
+		}
+	}
+	xmlhttp4.open("GET", url, true);
+	xmlhttp4.send();
+
+	function parseMultSounds(response) {
+		var arr = JSON.parse(response);
+		var i;
+		var out = "";
+
+		for(i = 0; i < arr.length; i++) {
+		    var raw = arr[i].kMandarin;
+		    if (raw.split(/\s+/).length > 1) {
+			raw = convertSoundsPinyin(raw);
+		    } else {
+			raw = convertPinyin(raw);
+		    }
+	    	    out += raw + ", ";
+	    }
+	document.getElementById("id04").innerHTML = out;
+	}
+	</script>
+
+	<p>Pinyin is the official romanization method for Mandarin, but Yale remains the standard format for Cantonese, which the API also supports. You can convert kCantonese fields to Yale format in much the same way as kMandarin to Pinyin.</p>
+
+	<p><b>Note:</b> Attempting to convert Mandarin to Yale with this API - though Yale romanization of Mandarin does exist - will at best return the wrong result and at worst break your function.</p>
+
+	<div class="code">
+	var xmlhttp = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/characters/radicals/85?fields=kCantonese";<br>
+	<br>
+	xmlhttp.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {<br>
+	&emsp;&emsp;parseYale(xmlhttp.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp.open("GET", url, true);<br>
+	xmlhttp.send();<br>
+	<br>
+	function parseYale(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+	<br>
+	&emsp;for(i = 0; i < arr.length; i++) {<br>
+	&emsp;&emsp;if(arr[i].kCantonese != null) { // ensure we have a value returned<br>
+	&emsp;&emsp;&emsp;var raw = arr[i].kCantonese;<br>
+	&emsp;&emsp;&emsp;var yale = convertYale(arr[i].kCantonese);<br>
+	&emsp;&emsp;&emsp;out += raw + " = " + yale + ", ";<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;&emsp;document.getElementById("id").innerHTML = out;<br>
+	}<br>
+	</div>
+
+	<p>Notice that when using the kCantonese field of characters, a check to ensure the value in the array is not null is added when printing them. There are a large number of characters that do not have a Cantonese pronunciation, but attempting to convert NULL to Yale breaks the function. I implemented a quick fix above; below, I've printed out the first 12 values from the response: </p>
+
+	<script>
+	var xmlhttp3 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/85?fields=kCantonese";
+
+	xmlhttp3.onreadystatechange=function() {
+	    if (xmlhttp3.readyState == 4 && xmlhttp3.status == 200) {
+		parseYale(xmlhttp3.responseText);
+	    }
+	}
+	xmlhttp3.open("GET", url, true);
+	xmlhttp3.send();
+
+	function parseYale(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "";
+
+	    for(i = 0; i < 10; i++) {
+		if(arr[i].kCantonese != null) {
+			var yale = convertYale(arr[i].kCantonese);
+		    	out += yale + ", ";
+		}
+	    }
+	    out += convertYale(arr[12].kCantonese);
+	    document.getElementById("id03").innerHTML = out;
+	}
+	</script>	
+
+	<div id="id03" class="code"></div>
+
+	<p>Notice that there's actually only 7 syllables printed; the others are NULL. Another option would be to print out a string such as 'n/a' if a value is NULL, which would also give a better idea of the relationship between Cantonese and the characters. For the most consistent results, combine this with the multiple-word check in the Pinyin function above, as the same is supported in the convertSoundsYale(function).</p>
+
+<h3><p>Getting Definitions</p></h3>
+
+	<p>Just as simple as parsing characters, the definitions are simply comma-delimited lists of words. While they aren't dictionary-level definitions, they are good enough to give the general impression of the meaning.<p>
+
+	<p>Definitions can be returned from character requests by specifying the kDefinition field. For our example this time we'll try radical 11, as it has only a few entries. There are no functions needed to parse the output; they are ready to display as-is.</p>
+
+	<div class="code">
+	var xmlhttp5 = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/characters/radicals/11?fields=kDefinition";<br>
+	<br>
+	xmlhttp5.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp5.readyState == 4 && xmlhttp5.status == 200) {<br>
+	&emsp;displayDef(xmlhttp5.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp5.open("GET", url, true);<br>
+	xmlhttp5.send();<br>
+	<br>
+	function displayDef(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+	<br>
+	&emsp;for(i = 0; i < arr.length; i++) {<br>
+	&emsp;&emsp;
+	&emsp;&emsp;out += arr[i].kDefinition + " ";<br>
+	&emsp;}<br>
+	&emsp;document.getElementById("id").innerHTML = out;<br>
+	}
+	</div>
+
+	<p>If we output this into a table instead, it will come out as neatly as a dictionary website:</p>
+
+	<script>
+	var xmlhttp5 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/11?fields=kDefinition";
+
+	xmlhttp5.onreadystatechange=function() {
+	    if (xmlhttp5.readyState == 4 && xmlhttp5.status == 200) {
+		displayDef(xmlhttp5.responseText);
+	    }
+	}
+	xmlhttp5.open("GET", url, true);
+	xmlhttp5.send();
+
+	function displayDef(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "<table>";
+
+	    for(i = 0; i < arr.length; i++) {
+		out+="<tr><td>";
+	    	out += arr[i].kDefinition + "</td></tr>";
+	    }
+	    out+="</table>";
+	    document.getElementById("id05").innerHTML = out;
+	}
+	</script>	
+
+	<div id = "id05"></div>
+
+	<p>Incidentally, getting definitions by radical is an interesting way to see how the radical affects the meaning.</p>
+
+<h3><p>Other Languages</p></h3>
+
+	<p>Before we put it all togther, here are some examples of grabbing the Japanese and Korean data supported by this API.</p>
+
+	<p>There is marginal support for <a href="http://en.wikipedia.org/wiki/Kanji">Japanese</a>, but as it makes extensive use of Chinese characters, someone using this API may have use for the Japanese pronunciation support. It offers both <i>on</i> and <i>kun</i> readings of characters, though beware there are many null values; Japanese regularly uses only roughly 2000 of them with a few thousand more having only occasional use. And since the Japanese language adapted pronunciations from several time periods, most of them have multiple pronunciations.</p>
+
+	<p>However, you need only worry about null values with the kJapaneseOn and kJapaneseKun; the API does not have any utility functions for Japanese. There are no tones and as such no need for diacritics, but the default value is in all caps, so if you prefer lowercase, you can use Javascript's .toLowerCase() function.</p>
+
+	<p>Here's an example of listing the characters next to their on and kun readings in Japanese, respectively:</p>
+
+	<div class ="code">
+	var xmlhttp6 = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/characters/radicals/85?fields=string,kJapaneseOn,kJapaneseKun";<br>
+<br>
+	xmlhttp6.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp6.readyState == 4 && xmlhttp6.status == 200) {<br>
+	&emsp;&emsp;displayJapanese(xmlhttp6.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp6.open("GET", url, true);<br>
+	xmlhttp6.send();<br>
+<br>
+	function displayJapanese(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+<br>
+	&emsp;for(i = 0; i < 10; i++) {<br>
+	&emsp;&emsp;arr[i].string + <br>
+	&emsp;&emsp;var on = arr[i].kJapaneseOn;<br>
+	&emsp;&emsp;if(!on) {<br>
+	&emsp;&emsp;&emsp;out += "n/a";// new: print 'n/a' if value is NULL<br>
+	&emsp;&emsp;} else {<br>
+	&emsp;&emsp;&emsp;out += on.toLowerCase(); // otherwise, convert to lowercase<br>
+	&emsp;&emsp;}<br>
+	&emsp;&emsp;var kun = arr[i].kJapaneseKun;<br>
+	&emsp;&emsp;if(!kun) {<br>
+	&emsp;&emsp;&emsp;out += "n/a";<br>
+	&emsp;&emsp;} else {<br>
+	&emsp;&emsp;&emsp;out += kun.toLowerCase();<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;document.getElementById("id").innerHTML = out;<br>
+	}<br>
+	</div>
+
+	<script>
+	var xmlhttp6 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/85?fields=string,kJapaneseOn,kJapaneseKun";
+
+	xmlhttp6.onreadystatechange=function() {
+	    if (xmlhttp6.readyState == 4 && xmlhttp6.status == 200) {
+		displayJapanese(xmlhttp6.responseText);
+	    }
+	}
+	xmlhttp6.open("GET", url, true);
+	xmlhttp6.send();
+
+	function displayJapanese(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "<table>";
+
+	    for(i = 0; i < 10; i++) {
+		out+="<tr><td>" +
+	    	arr[i].string + 
+		"</td><td>";
+		var on = arr[i].kJapaneseOn;
+		if(!on) {
+			out += "n/a";
+		} else {
+			out += on.toLowerCase();
+		}
+		out += "</td><td>";
+		var kun = arr[i].kJapaneseKun;
+		if(!kun) {
+			out += "n/a";
+		} else {
+			out += kun.toLowerCase();
+		}
+		out += "</td></tr>"
+	    }
+	    out+="</table>";
+	    document.getElementById("id06").innerHTML = out;
+	}
+	</script>
+
+	<p>Formatted as a table, the above code produces the following output:</p>
+
+	<div id="id06"></div>
+
+	<p>Korean also <a href="http://en.wikipedia.org/wiki/Hanja">uses Chinese characters</a>, even if it isn't as famous for it, and utilizes only around 1800 of them in total. The modern Korean pronunciation in Yale format is stored in the kKorean field, with the Korean language version in the kHangul field. I have altered the field names and request url; the rest of the code is unchanged from the Japanese example above:</p>
+
+	<script>
+	var xmlhttp7 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/1?fields=string,kKorean,kHangul";
+
+	xmlhttp7.onreadystatechange=function() {
+	    if (xmlhttp7.readyState == 4 && xmlhttp7.status == 200) {
+		displayJapanese(xmlhttp7.responseText);
+	    }
+	}
+	xmlhttp7.open("GET", url, true);
+	xmlhttp7.send();
+
+	function displayJapanese(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "<table>";
+
+	    for(i = 0; i < 10; i++) {
+		out+="<tr><td>" +
+	    	arr[i].string + 
+		"</td><td>";
+		var k = arr[i].kKorean;
+		if(!k) {
+			out+= 'n/a';
+		} else {
+			out += arr[i].kKorean.toLowerCase();
+		}
+		out += "</td><td>" +
+		arr[i].kHangul +
+		"</td></tr>";
+	    }
+	    out+="</table>";
+	    document.getElementById("id07").innerHTML = out;
+	}
+	</script>	
+
+	<div id="id07"></div>
+
+	<p>Unlike Japanese, there is a field to display the Korean pronunciation in its native script. However, the romanized database is actually more robust, as you can see in the data above; there are more gaps in the kHangul database.</p>
+
+	<p>There are additionally fields for Tang-dynasty Chinese and Vietnamese in the kTang and kVietnamese fields, respectively; they follow the same pattern as the above - all capitals, between 0-3 results per character.</p>
+
+<h3><p>Miscellaneous</p></h3>
+
+	<p>Language learners may be interested in the stroke count fields. Each character is comprised of a set number of strokes written in a specific order. Finding a character in a dictionary is different than finding an English word - especially if you don't know the pronunciation. Instead, characters are sorted by radical, then remaining stroke count. In this way characters can be looked up quickly in a dictionary.</p>
+
+	<p>The API supports two main methods of obtaining stroke counts.</p>
+
+	<table>
+	<tr>
+		<td>kRSKangXi:</td>
+		<td>Radical number and remaining stroke count (i.e. not including the radical) in [0-1].[0-22] format. </td>
+	</tr><tr>
+		<td>kTotalStrokes:</td>
+		<td>The total number of strokes in the character</td>
+	</tr>
+	</table>
+
+	<p>The kTotalStrokes field is straightforward enough; it returns a single number which may be used for filtering or display. There is a utility function that parses the kRSKangXi field into something slightly more easily readable than the provided format, as per the below code:</p>
+
+	<div class ="code">
+	var xmlhttp8 = new XMLHttpRequest();<br>
+	var url = "http://ccdb.hemiola.com/characters?fields=string,kRSKangXi";<br>
+<br>
+	xmlhttp8.onreadystatechange=function() {<br>
+	&emsp;if (xmlhttp8.readyState == 4 && xmlhttp8.status == 200) {<br>
+	&emsp;&emsp;displayKangXi(xmlhttp8.responseText);<br>
+	&emsp;}<br>
+	}<br>
+	xmlhttp8.open("GET", url, true);<br>
+	xmlhttp8.send();<br>
+<br>
+	function displayKangXi(response) {<br>
+	&emsp;var arr = JSON.parse(response);<br>
+	&emsp;var i;<br>
+	&emsp;var out = "";<br>
+<br>
+	&emsp;for(i = 0; i < 10; i++) {<br>
+	&emsp;&emsp;out += arr[i].string;<br>
+	&emsp;&emsp;var kang = parseRS(arr[i].kRSKangXi);<br>
+	&emsp;&emsp;var stringed = JSON.stringify(kang); // Note: parseRS returns an object<br>
+	&emsp;&emsp;out += stringed;<br>
+	&emsp;}<br>
+	&emsp;document.getElementById("id").innerHTML = out;<br>
+	}<br>
+	</div>
+
+	<script>
+	var xmlhttp8 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters?fields=string,kRSKangXi";
+
+	xmlhttp8.onreadystatechange=function() {
+	    if (xmlhttp8.readyState == 4 && xmlhttp8.status == 200) {
+		displayKangXi(xmlhttp8.responseText);
+	    }
+	}
+	xmlhttp8.open("GET", url, true);
+	xmlhttp8.send();
+
+	function displayKangXi(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "<table>";
+
+	    for(i = 15; i < 25; i++) {
+		out+="<tr><td>" +
+	    	arr[i].string + 
+		"</td><td>";
+		var kang = parseRS(arr[i].kRSKangXi);
+		var stringed = JSON.stringify(kang);
+		out += stringed +
+		"</td></tr>";
+	    }
+	    out+="</table>";
+	    document.getElementById("id08").innerHTML = out;
+	}
+	</script>
+
+	<p>The parseRS(value) function creates a JSON object, which is why it needs to be JSON.stringified before it can be printed. Granted, the provided method of printing is not the prettiest, but the utility function can be edited to return something nicer if needed.</p>
+
+	<div id = "id08"></div>
+
+	<p>The remaining fields have less general usage - there are many fields to return the position of characters in a range of dictionaries, or to return certain encodings for the characters based on other historical or modern standards. The <a href="http://www.unicode.org/reports/tr38/">Unihan home page</a> lists every field in case your usage requires these.</p>
+
+<h3><p>Putting it Together</p></h3>
+
+	<p>So now we know how to get our data and display it - even convert it into something more easily human read. Let's walk over how to create a small dictionary, which is outside of study the best application for this API.</p>
+
+	<p>A good candidate for a project using this API is to provide users a way to look up the various pronunciations in other languages and the definitions of all characters that use a certain radical, in order to show relationships between languages and between radical and definition. We'll pick radical 85 for reference, as it has a long list of values returned.</p>
+
+	<p>The first step to using the API is to identify the fields you'll need. For our project, that would be the following:</p>
+
+	<ul>
+		<li>string</li>
+		<li>kTang</li>
+		<li>kMandarin</li>
+		<li>kCantonese</li>
+		<li>kJapaneseOn</li>
+		<li>kKorean</li>
+		<li>kVietnamese</li>
+	</ul>
+
+	<p>For our filters, we'll limit it to radical 85, and only characters in the GB database. Our request will then take the form:</p>
+
+	<div class="code">http://ccdb.hemiola.com/characters/radicals/85?filter=gb&fields=string,kTang,kMandarin,kCantonese,kJapaneseOn,kKoran,kVietnamese</div>
+
+	<p>A sample of a single object from the response:</p>
+
+	<div class="code">{"string":"\u6c34","kTang":"*shu\u01d0","kMandarin":"SHUI3","kCantonese":"seoi2","kJapaneseOn":"SUI","kKorean":"SWU","kVietnamese":"h\u00e9o thu\u1ef7"}</div>
+
+	<p>The pronunciation fields all need some work, so let's prepare our parsing functions, assuming we still have our JSON response parsed into a variable called "arr". This is the first time we've looked at the kTang and kVietnamese fields; happily, these are already set to display-as is.</p>
+
+	<div class="code">
+	var tang = arr[i].kTang;<br>
+	if(!tang) {
+	&emsp;tang = "n/a";
+	}
+	var mandarin = arr[i].kMandarin;<br>
+	if(!mandarin) {<br>
+	&emsp;mandarin = "n/a"; // unlikely, but best to cover our bases<br>
+	} else {<br>
+	&emsp;if (mandarin.split(/\s+/).length > 1) {<br>
+	&emsp;&emsp;mandarin = convertSoundsPinyin(mandarin);<br>
+	&emsp;} else {<br>
+	&emsp;&emsp;mandarin = convertPinyin(mandarin);<br>
+	&emsp;}<br>
+	}<br>
+	var can = arr[i].kCantonese;<br>
+	if(!can) {<br>
+	&emsp;can = "n/a";<br>
+	} else {<br>
+	&emsp;if (can.split(/\s+/).length > 1) {<br>
+	&emsp;&emsp;can = convertSoundsYale(can);<br>
+	&emsp;} else {<br>
+	&emsp;&emsp;can = convertYale(can);<br>
+	&emsp;}<br>
+	}<br>
+	var on = arr[i].kJapaneseOn;<br>
+	if(!on) {<br>
+	&emsp;on = "n/a"; <br>
+	} else {<br>
+	&emsp;on = on.toLowerCase();<br>
+	}	<br>
+	var korean = arr[i].kKorean;<br>
+	if(!korean) {<br>
+	&emsp;korean = "n/a";<br>
+	} else {<br>
+	&emsp;korean = korean.toLowerCase();<br>
+	}<br>
+	var vietnamese = arr[i].kVietnamese;<br>
+	if(!vietnamese) {<br>
+	&emsp;vietnamese = "n/a";
+	}
+	</div>
+
+	<p>All that's left is to print the values into a table:<p>
+
+	<script>
+	var xmlhttp9 = new XMLHttpRequest();
+	var url = "http://ccdb.hemiola.com/characters/radicals/85?filter=gb&fields=string,kTang,kMandarin,kCantonese,kJapaneseOn,kKorean,kVietnamese";
+
+	xmlhttp9.onreadystatechange=function() {
+	    if (xmlhttp9.readyState == 4 && xmlhttp9.status == 200) {
+		displayDictionary(xmlhttp9.responseText);
+	    }
+	}
+	xmlhttp9.open("GET", url, true);
+	xmlhttp9.send();
+
+	function displayDictionary(response) {
+	    var arr = JSON.parse(response);
+	    var i;
+	    var out = "<table>";
+
+	    for(i = 0; i < 15; i++) {
+		var tang = arr[i].kTang;
+		if(!tang) {
+			tang = "n/a";
+		}
+		var mandarin = arr[i].kMandarin;
+		if(!mandarin) {
+			mandarin = "n/a"; 
+		} else {
+			if (mandarin.split(/\s+/).length > 1) {
+				mandarin = convertSoundsPinyin(mandarin);
+			} else {
+				mandarin = convertPinyin(mandarin);
+			}
+		}
+		var can = arr[i].kCantonese;
+		if(!can) {
+			can = "n/a";
+		} else {
+			if (can.split(/\s+/).length > 1) {
+				can = convertSoundsYale(can);
+			} else {
+				can = convertYale(can);
+			}
+		}
+		var on = arr[i].kJapaneseOn;
+		if(!on) {
+			on = "n/a"; 
+		} else {
+			on = on.toLowerCase();
+		}	
+		var korean = arr[i].kKorean;
+		if(!korean) {
+			korean = "n/a";
+		} else {
+			korean = korean.toLowerCase();
+		}
+		var vietnamese = arr[i].kVietnamese;
+		if(!vietnamese) {
+			vietnamese = "n/a";
+		}
+		out+="<tr><td>" +
+	    	arr[i].string + 
+		"</td><td>" + tang +
+		"</td><td>" + mandarin +
+		"</td><td>" + can +
+		"</td><td>" + on +
+		"</td><td>" + korean +
+		"</td><td>" + vietnamese +	
+		"</td></td>"
+	    }
+	    out+="</table>";
+	    document.getElementById("id09").innerHTML = out;
+	}
+	</script>
+
+	<div id="id09"></div>
+
+	<p>This concludes the tutorial on parsing and displaying responses from the Chinese Character Web API.</p>
+
+	<a href="filter.html">Back to Filter</a> - <a href="utility.html">Utlity Functions</a>
+
+</div>
+
+</body>
+</html>
+

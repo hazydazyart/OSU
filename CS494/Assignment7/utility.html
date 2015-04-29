@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>CCDB Documentation</title>
+        <script src = "/ccdbutils.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div class="main">
+	<h1><p>Utility Functions</p></h1>
+
+	<p>The creator of this API provided a series of utility functions which can be downloaded from <a href="http://ccdb.hemiola.com">the API's webpage</a>, most of which you have seen in the <a href="parse.html">section on parsing and displaying data.</a> For reference, the functions have been copied here along with a short explanation on what they do.</p>
+
+	<p>The first series of functions are available as reference to check if the character passed is Chinese or not - if it is between the predefined Unihan values for the two main Chinese character databases. While it was not utilized in this documentation, it is a good tool to have if the API is used in any implementation requiring user input.</p>
+
+	<div class="code">
+	// constants<br>
+<br>
+	// Unicode CJK Unified Ideographs<br>
+	 MIN_UVALUE = 0x4E00;<br>
+	 MAX_UVALUE = 0x9FA5;<br>
+<br>
+	// The range of Big5a<br>
+	 MIN_BIG5A = 0xA440;<br>
+	 MAX_BIG5A = 0xC69F;<br>
+<br>
+	// range checking<br>
+<br>
+	// Returns true if the first character is Chinese<br>
+	 isChinese = function(ch) {<br>
+	&emsp;if (!ch || ch.length === 0) {<br>
+	&emsp;&emsp;return false;<br>
+	&emsp;}<br>
+<br>
+	&emsp;var i = ch.charCodeAt(0);<br>
+	&emsp;return i >=  MIN_UVALUE && i <=  MAX_UVALUE;<br>
+	};<br>
+<br>
+	// Returns true if the Big5 character code (as a string) is Big5a<br>
+	 isBig5a = function(value) {<br>
+	&emsp;if (!value) {<br>
+	&emsp;&emsp;return false;<br>
+	&emsp;}<br>
+<br>
+	&emsp;value = parseInt(value, 16);<br>
+	&emsp;return value >=  MIN_BIG5A && value <=  MAX_BIG5A;<br>
+	};<br>
+	</div>
+
+	<p>The next function is a simple string replace function used in the various romanization conversion functions.</p>
+
+	<div class="code">
+	// Return a new string by replacing one character with supplied string<br>
+	 setCharAt = function(str, i, ch) {<br>
+	&emsp;if (i < str.length) {<br>
+	&emsp;&emsp;return str.substr(0, i) + ch + str.substr(i + 1);<br>
+	&emsp;}<br>
+	<br>
+	&emsp;return str;<br>
+	};
+	</div>
+
+	<p>The convertCode function converts U+ Unicode format characters to Unicode escape characters for displaying on webpages. It simply converts the values after the U+ to hexidecimal by parsing it as a base 16 integer.</p>
+
+	<div class="code">
+	// Given a string that contains 0 or more U+ values, return<br>
+	// an array of 0 or more corresponding Unicode characters<br>
+	 convertCode = function(value) {<br>
+	&emsp;if (!value) {<br>
+	&emsp;&emsp;return [];<br>
+	&emsp;}<br>
+<br>
+	&emsp;var splits = value.split("U+");<br>
+	&emsp;if (splits.length < 2) {<br>
+	&emsp;return [];<br>
+	&emsp;}<br>
+<br>
+	&emsp;var result = [];<br>
+	&emsp;splits = splits.slice(1);<br>
+<br>
+	&emsp;for (var i in splits) {<br>
+	&emsp;&emsp;result.push(String.fromCharCode(parseInt(splits[i], 16)));<br>
+	&emsp;}<br>
+<br>
+	&emsp;return result;<br>
+	};<br>
+	</div>
+
+	<p>The first of the next example was used to parse the kRSKangXi field, which returns a radical number and remaining stroke count in a radical.stroke format. The one after is a simple check to confirm if two values are the same</p>
+
+	<div class="code">
+	// Given a string that contains 0 or more radical.stroke counts,<br>
+	// return an array of 0 or more {"R":int, "S":int} values.<br>
+	 parseRS = function(value) {<br>
+	 &emsp;if (!value) {<br>
+	&emsp;&emsp;return [];<br>
+	&emsp;}<br>
+<br>
+	&emsp;var results = [];<br>
+	&emsp;var splits = value.split(" ");<br>
+<br>
+	&emsp;for (var i in splits) {<br>
+	&emsp;&emsp;var str = splits[i];<br>
+	&emsp;&emsp;var iS = str.lastIndexOf(".");<br>
+	&emsp;&emsp;if (iS > 0) {<br>
+	&emsp;&emsp; var r = parseInt(str, 10);<br>
+	&emsp;&emsp;&emsp;if (r) {<br>
+	&emsp;&emsp;&emsp;&emsp;var s = parseInt(str.substr(iS + 1), 10);<br>
+	&emsp;&emsp;&emsp;&emsp;results.push({"R":r, "S":s});<br>
+	&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+<br>
+	&emsp;return results;<br>
+	};<br>
+<br>
+	// Compares two RS strings.<br>
+	 compareRS = function(a, b) {<br>
+	&emsp;var rs1 =  parseRS(a);<br>
+	&emsp;var rs2 =  parseRS(b);<br>
+	&emsp;if (rs1.length > 0 && rs2.length > 0) {<br>
+	&emsp;&emsp;return rs1[0].R === rs2[0].R && rs1[0].S === rs2[0].S;<br>
+	&emsp;}<br>
+<br>
+	&emsp;return false;<br>
+	};<br>
+	</div>
+
+	<p>The counterpart to the convertCode function above, this function inserts a parenthetical Unicode escape character after a U+ format string by converting a base sixteen integer back to a string.</p>
+
+	<div class="code">
+	// Find U+xxxx sequences and insert parenthetical Unicode characters<br>
+	 injectUnicode = function(value) {<br>
+	&emsp;if (value === null) {<br>
+	&emsp;&emsp;return "";<br>
+	&emsp;}<br>
+<br>
+	&emsp;var splits = value.split("U+");<br>
+	&emsp;if (splits.length == 1) {<br>
+	&emsp;&emsp;return value;<br>
+	&emsp;}<br>
+<br>
+	&emsp;var result = splits[0];<br>
+	&emsp;splits = splits.slice(1);<br>
+<br>
+	&emsp;for (var s in splits) {<br>
+	&emsp;&emsp;var splits2 = splits[s].split(" ");<br>
+	&emsp;&emsp;var v = splits2[0];<br>
+	&emsp;&emsp;var x = "";<br>
+	&emsp;&emsp;if (splits2.length > 1) {<br>
+	&emsp;&emsp;&emsp;x = " " + splits2.slice(1).join(" ");<br>
+	&emsp;&emsp;}<br>
+<br>
+	&emsp;&emsp;result += "U+" + v + " (" + String.fromCharCode(parseInt(v, 16)) + ")" + x;<br>
+	&emsp;}<br>
+<br>
+	&emsp;return result;<br>
+	};<br>
+	</div>
+
+	<p>As mentioned in the Parse section, the function to retrieve the tone after a kMandarin or kCantonese value is to evaluate the last character, which should be the tone number. This function gets the tone and returns the separated sound and tone to be used by the Pinyin and Yale functions.</p>
+
+	<div class="code">
+	// Split the given sound and its tone, if any<br>
+	 splitSound = function(value) {<br>
+	 &emsp;var result = "";<br>
+	 &emsp;if (value) {<br>
+	&emsp;&emsp;result = value.toLowerCase();<br>
+	&emsp;}<br>
+<br>
+	&emsp;var tone = parseInt(value.substr(value.length - 1), 10);<br>
+	 &emsp;if (isNaN(tone)) {<br>
+	&emsp;&emsp;tone = 0;<br>
+	&emsp; } else {<br>
+	&emsp;&emsp;result = result.substr(0, result.length - 1);<br>
+	&emsp;}<br>
+<br>
+	&emsp;var iV = result.indexOf("v");<br>
+	&emsp;if (iV >= 0) {<br>
+	&emsp;&emsp;result =  setCharAt(result, iV, "\u00FC");<br>
+	&emsp;}<br>
+<br>
+	&emsp;return [result, tone];<br>
+	};<br>
+	</div>
+
+	<p>This function works with the value returned by the previous one to replace the core vowel of the value passed with the correct diacritic attached.</p>
+
+	<div class="code">
+	 addDiacritic = function(value, tone) {<br>
+	 &emsp;if (value === "ng") {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, 0, "\u0144"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, 0, "\u0148"); break;<br>
+	&emsp;&emsp;ase 4: value += "\u0300"; break;<br>
+	&emsp;&emsp;}<br>
+<br>
+	&emsp;return value;<br>
+	&emsp;}<br>
+<br>
+	&emsp;if (value === "m") {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 2: value += "\u0301"; break;<br>
+	&emsp;&emsp;case 4: value += "\u0300"; break;<br>
+	&emsp;&emsp;}<br>
+<br>
+	&emsp;&emsp;return value;<br>
+	&emsp;}<br>
+<br>
+	&emsp;var iA = value.lastIndexOf("a");  // for Yale<br>
+	&emsp;var iO = value.indexOf("o");<br>
+	&emsp;var iE = value.indexOf("e");<br>
+	&emsp;var iI = value.indexOf("i");<br>
+	&emsp;var iU = value.indexOf("u");<br>
+	&emsp;var iV = value.indexOf("\u00FC");<br>
+<br>
+	&emsp;var iIU = value.indexOf("iu");<br>
+	&emsp;if (iIU >= 0) {<br>
+	&emsp;&emsp;iI = -1;<br>
+	&emsp;&emsp;iU = iIU + 1;<br>
+	&emsp;}<br>
+<br>
+	&emsp;if (iA >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iA, "\u0101"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iA, "\u00E1"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iA, "\u01CE"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iA, "\u00E0"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;else if (iO >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iO, "\u014D"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iO, "\u00F3"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iO, "\u01D2"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iO, "\u00F2"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;else if (iE >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iE, "\u0113"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iE, "\u00E9"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iE, "\u011B"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iE, "\u00E8"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;else if (iI >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iI, "\u012B"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iI, "\u00ED"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iI, "\u01D0"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iI, "\u00EC"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;else if (iU >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iU, "\u016B"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iU, "\u00FA"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iU, "\u01D4"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iU, "\u00F9"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+	&emsp;else if (iV >= 0) {<br>
+	&emsp;&emsp;switch (tone) {<br>
+	&emsp;&emsp;case 1: value =  setCharAt(value, iV, "\u01D6"); break;<br>
+	&emsp;&emsp;case 2: value =  setCharAt(value, iV, "\u01D8"); break;<br>
+	&emsp;&emsp;case 3: value =  setCharAt(value, iV, "\u01DA"); break;<br>
+	&emsp;&emsp;case 4: value =  setCharAt(value, iV, "\u01DC"); break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;}<br>
+<br>
+	&emsp;return value;<br>
+	};<br>
+	</div>
+
+	<p>These last four functions convert one or multiple sound values to Pinyin or Yale, respectively. They are simply an aggregation of the above functions which do all the actual parsing and replacing.</p>
+
+	<div class="code">
+
+	// Convert a list of space-separated Unihan-format sounds to an array of pinyin syllables<br>
+	 getSoundsPinyin = function(value) {<br>
+	&emsp;var results = [];<br>
+	&emsp;if (!value) {<br>
+	&emsp;&emsp;return results;<br>
+	&emsp;}<br>
+<br>
+	&emsp;var splits = value.split(" ");<br>
+	&emsp;for (var i in splits) {<br>
+	&emsp;&emsp;results.push( convertPinyin(splits[i]));<br>
+	&emsp;}<br>
+<br>
+	&emsp;return results;<br>
+	};<br>
+<br>
+	// Convert a list of space-separated Unihan-format sounds to pinyin<br>
+	 convertSoundsPinyin = function(value) {<br>
+	&emsp;return  getSoundsPinyin(value).join(" ");<br>
+	};<br>
+<br>
+	// Convert from Unihan format (upper-case, with tone numbers) to real pinyin.<br>
+	 convertPinyin = function(value) {<br>
+	&emsp;var split =  splitSound(value);<br>
+	&emsp;var result = split[0];<br>
+	&emsp;var tone = split[1];<br>
+	&emsp;if (tone < 1 || tone > 5) {<br>
+	&emsp;&emsp;return result;<br>
+	&emsp;}<br>
+<br>
+	&emsp;return  addDiacritic(result, tone);<br>
+	};<br>
+
+	///////////////////////////////////////////////////////////////////////////<br>
+	// Yale romanization for Cantonese<br>
+<br>
+	// Convert a list of space-separated Unihan-format sounds to an array of Yale syllables<br>
+	 getSoundsYale = function(value) {<br>
+	 &emsp;var results = [];<br>
+	 &emsp;if (!value) {<br>
+	&emsp;&emsp;return results;<br>
+	 &emsp;}<br>
+<br>
+	 &emsp;var splits = value.split(" ");<br>
+	 &emsp;for (var i in splits) {<br>
+	&emsp;&emsp;results.push( convertYale(splits[i]));<br>
+	 &emsp;}<br>
+<br>
+	&emsp;return results;<br>
+	};<br>
+<br>
+	// Convert a list of space-separated Unihan-format sounds to Yale<br>
+	 convertSoundsYale = function(value) {<br>
+	&emsp;return  getSoundsYale(value).join(" ");<br>
+	};<br>
+<br>
+	// Convert from Unihan format (with tone numbers) to real Yale.<br>
+	 convertYale = function(value) {<br>
+	&emsp;var split =  splitSound(value);<br>
+	 &emsp;var result = split[0];<br>
+	 &emsp;var tone = split[1];<br>
+	 &emsp;if (tone < 1 || tone > 6) {<br>
+	&emsp;&emsp;return result;<br>
+	 &emsp; }<br>
+<br>
+	 &emsp;if (tone >= 4) {<br>
+	&emsp;&emsp;result += "h";<br>
+	 &emsp;}<br>
+<br>
+	&emsp;if (tone === 3 || tone === 6) {<br>
+	&emsp;&emsp;return result;<br>
+	&emsp; }<br>
+<br>
+	 &emsp;if (tone === 5) {<br>
+	&emsp;&emsp;tone = 2;<br>
+	 &emsp;}<br>
+<br>
+	&emsp; return  addDiacritic(result, tone);<br>
+	};	<br>
+	</div>
+
+	<p>This concludes the brief utility function overview. The rest of the CcdbUtils.js file is comprised of a testing suite to ensure the filtering logic is correct and that all functions return the correct value; while interesting, they are not necessary to use the API.</p>
+
+<a href="parse.html">Back to Parse</a>
+</div>
+</body>
+</html>
+

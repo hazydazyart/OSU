@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <title>CCDB Documentation</title>
+        <script src = "/ccdbutils.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div class = "main">
+
+	<h1><p>Filters</p></h1>
+
+	<p>The API hosts a slew of useful filtering options, including chosing the fields returned besides the default. I have listed all the filter options here for reference, as the remainder of the documentation assumes familiarity.</p>
+
+	<div class="code">
+	<dl>
+		<dt>gb</dt>
+		<dd>Returns all characters defined in the GB2312 character set, for a total of 20,902 CJK Unified Ideographs</dd>
+		<dd>Sample useage: http://ccdb.hemiola.com/characters?filter=gb</dd>
+		<dt>big5</dt>
+		<dd>Includes a total of 13061 characters from big5a and big5b.</dd>
+		<dd>Big5a holds 5401 of the common use characters.</dd>
+		<dd>Big5b is likely not useful to non-native speakers as the characters it contains is more esoteric.</dd>
+		<dd>You can filter separately by big5a and big5b.</dd>
+		<dd>Sample usage: http://ccdb.hemiola.com/characters?filter=(big5/big5a/big5b)</dd>
+		<dt>sjis</dt>
+		<dd>Contains the 6356 characters included in the Japanese Shift JIS encoding.</dd>
+		<dd>The API as is has little support for Japanese besides getting characters and sounds.</dd>
+		<dd>Sample usage: http://ccdb.hemiola.com/characters?filter=sjis</dd>
+		<dt>simplified</dt>
+		<dd>Simplified means that the character has a traditional variant.</dd>
+		<dd>Sample usage: http://ccdb.hemiola.com/characters?filter=simplified</dd>
+		<dt>simplifiable</dt>
+		<dd>Simplifiable returns characters that are traditional, but have a simplified variant.</dd>
+		<dd>This does not return the simplified variant, or traditional characters with no simplified variant.</dd>
+		<dd>Sample usage: http://ccdb.hemiola.com/characters?filter=simplifiable</dd>
+		<dt>!simplified</dt>
+		<dd>Rather than include a separate filter for traditional characters, they are retrieved by specifying non-simplified characters.</dd>
+		<dd>Sample usage: <a href="http://ccdb.hemiola.com/characters?filter=!simplified">http://ccdb.hemiola.com/characters?filter=!simplified</a></dd>
+		<dt>simplified[] and simplifiable[]</dt>
+		<dd>This is a more academic filter, which returns characters that have multiple simplified variants and multiple traditional variants, respectively.</dd>
+		<dd>These should not be combined with other filters.</dd>
+		<dd>Sample usage: ?filter=simplified[]</dd>
+	</dl>
+	</div>
+
+	<h3><p>Complex Filters</p></h3>
+
+	<p>The API also supports complex filtering with boolean operators AND (+), OR (|), and NOT (!), which follows the normal boolean logic for order of precedence. The two special simplified[] and simplifiable[] do not support the NOT operator.</p>
+
+	<p>Here are some sample complex filters that may be useful:</p>
+
+	<div class="code">
+	<ul>
+		<li>?filter=gb+simplified - Characters that are both in the gb database and are simplified.</li>
+		<li>?filter=gb+!simplified - Characters that are in the gb but not simplified (traditional)</li>
+		<li>?filter=gb|simplified - Characters that are in the gb, are simplified, or both</li>
+		<li>?filter=gb+simplified|gb+simplifiable - Characters that are in the gb and are either simplified, simplifiable, or both</li>
+	</ul>
+	</div>
+
+	<h3><p>Filtering by Field</p></h3>
+
+	<p>All filters can be expanded to specify the field returned as well, if something other than the default is needed. Some field examples are given below; I encourage you to click the request links to familiarize yourself with the sort of responses these get before moving on to the section of parsing the data.</p>
+	
+	<h3><p>Filtering by Value</p></h3>
+
+	<p>Specifically for filtering for number of strokes besides the radical, there is a special query. The number of strokes besides the radical is held in the 'strokes' field, so to find all characters with a total of 10 strokes besides radical 85, you would enter the query:</p>
+
+	<div class = "code">http://ccdb.hemiola.com/characters/radicals/85?strokes=10</div>
+
+	<p>For those of you unfamiliar with Chinese, this is much more useful than it sounds.</p>
+
+	<b>Requestable Fields</b>
+	<div class ="code">
+	<dl>
+		<dt>string</dt>
+		<dd>A Unicode escape character</dd>
+		<dd>Sample usage: to get all characters that use radical 200: <a href="http://ccdb.hemiola.com/characters/radcials/200?field=string">http://ccdb.hemiola.com/characters/radcials/200?field=string</a></dd>
+		<dt>kMandarin</dt>
+		<dd>The Mandarin pronunciation of the character.</dd>
+		<dd>Sample usage to get the pronunciation of all characters that use radical 200: <a href="http://ccdb.hemiola.com/characters/radicals/200?field=kMandarin">http://ccdb.hemiola.com/characters/radicals/200?field=kMandarin</a></dd>
+		<dt>kDefinition</dt>
+		<dd>A basic English definition, generally a single word or list of words.</dd>
+		<dd>Sample usage: <a href="http://ccdb.hemiola.com/characters/radical/200?field=kDefinition">http://ccdb.hemiola.com/characters/radical/200?field=kDefinition</a></dd>
+		<dt>kCantonese</dt>
+		<dd>The Cantonese pronuncation of the characters.</dd>
+		<dd>Sample usage: <a href="http://ccdb.hemiola.com/characters/radical/200?field=kCantonese">http://ccdb.hemiola.com/characters/radical/200?field=kCantonese</a></dd>
+		<dt>kSemanticVariant</dt>
+		<dd>The Unicode value in U+ form for all characters that share a meaning with the indicated character.</dd>
+		<dd>The <a href="http://www.unicode.org/reports/tr38/#kSemanticVariant">Unicode.org</a> page for this field will clarify the results, as it returns a wealth of information on how interchangeable a character is with another.</dd>
+		<dd>Sample usage: <a href="http://ccdb.hemiola.com/characters/radical/200?field=kSemanticVariant">http://ccdb.hemiola.com/characters/radical/200?field=kSemanticVariant</a></dd>
+		<dt>kHangul, kJapaneseOn, kJapaneseKun</dt>
+		<dd>Returns the Korean or Japanese on or kun readings of the character, respectively.</dd>
+		<dd>Not all characters will have a Korean or Japanese pronunciation.</dd>
+	</dl>
+	</div>
+
+	<p>There are many more field accessible through this API, but the most useful ones are listed above. For a full list of fields and detailed information on what they return, see the <a href="http://www.unicode.org/reports/tr38/">Unihan Database</a> page from Unicode.org.</p>
+
+	<a href="data.html">Back to Data</a> - <a href="parse.html">Parse and Display Results</a>
+</div>
+</body>
+</html>
+
