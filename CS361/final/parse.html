@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>JRF-to-Resume Parser</title>
+	<script src="pair_jrf.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div id="main">
+	<h1>Upload Your JRF File Here</h1>
+	<p>This page will allow you to upload a JRF file, which will then be parsed and output as a standard format resume.</p>
+	<h3>What is JRF?</h3>
+	<p>A JRF file is a resume that has been parsed into a human readable markup language. Using JRF, a resume can be quickly reviewed by a person or easily parsed by a computer. JRF files can simplify the application process by allowing users to one-click upload their skills and experience, and allow employers to easily find applicants that fit their needs.</p>
+	<h3>How do I get a JRF file for my resume?</h3>
+	<p>Haven't converted your resume into JRF yet? <a href="generator.html">Click here</a> to either upload a file or enter your resume into a form to obtain a JRF formatted file.</p>
+	<h3>Choose a file below to preview our resume parser.</h3>
+	<input type="file" id="id_file" />
+	<a style="display:none" download="resume.json" id="downloadLink">Download JRF File</a>
+	<div id="container">
+	</div>
+	</div>
+</body>
+</html>
+

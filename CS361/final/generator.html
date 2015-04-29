@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<head>
+    <title>Resume Generator</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src='pair_jrf_g.js'></script>
+</head>
+<body>
+	<div id ="main">
+	<h1>Resume-to-JRF Generator</h1>
+	<p>Use the form below to enter your resume data. Once complete, you can then download the JRF-format file.</p>
+
+	<p>Red indicates a required field; green indicates that field is optional.</p>
+
+	<p>Once you have your JRF file, <a href="parse.html">click here</a> to test the JRF-to-Resume generator!</p>
+
+	<p>Or, upload a file below:</p>
+
+	<input type="file" id="id_file" />	
+    <p></p>
+    <fieldset id="fullName">
+            <legend>Name</legend>
+            <label for="FirstName">First Name:</label>
+            <input type="text" name="FirstName" required>
+            <label for="MiddleName">Middle Name:</label>
+            <input type="text" name="MiddleName">
+            <label for="LastName">Last Name:</label>
+            <input type="text" name="LastName" required>
+		</fieldset>
+		<fieldset id="addr">
+            <legend>Address</legend>
+			<label for="Street">Street:</label>
+			<input type="text" name="Street" required>
+			<label for="City">City:</label>
+			<input type="text" name="City" required>
+			<label for="State">State:</label>
+			<input type="text" name="State" required>
+            <label for="Zip">Zip Code:</label>
+            <input type="text" name="Zip" required>
+            <label for="Country">Country:</label>
+            <input type="text" name="Country" required>
+		</fieldset>
+        <fieldset id="phone">
+            <legend>Phone Number</legend>
+            <label for="Primary">Primary Phone #:</label>
+            <input type="text" name="Primary" required>
+            <label for="Secondary">Secondary Phone #:</label>
+            <input type="text" name="Secondary">
+        </fieldset>
+        <fieldset id="soc">
+            <legend>Social</legend>
+            <label for="Email">E-mail:</label>
+            <input type="text" name="Email">
+            <label for="Linkedin">Linkedin:</label>
+            <input type="text" name="Linkedin">
+            <label for="Facebook">Facebook:</label>
+            <input type="text" name="Facebook">
+            <label for="Twitter">Twitter:</label>
+            <input type="text" name="Twitter">
+        </fieldset>
+        <fieldset id="misc">
+            <legend>Misc</legend>
+            <label for="homepage_url">Webpage URL:</label>
+            <input type="text" name="homepage_url">
+            <label for="national">Nationality:</label>
+            <input type="text" name="national">
+            <label for="marital">Marital Status:</label>
+            <input type="text" name="marital">
+        </fieldset>
+        <fieldset id="birthDate">
+            <legend>Birthdate</legend>
+            <label for="month">Month:</label>
+            <input type="text" name="month">
+            <label for="day">Day:</label>
+            <input type="number" name="day" min="1" max="31">
+            <label for="year">Year:</label>
+            <input type="number" name="year" min="1900" max="2100">
+        </fieldset>
+		
+		<fieldset id="experience_0">
+            <legend>Experience</legend>
+            <label for="Position">Position:</label>
+            <input type="text" name="Position">
+            <label for="EmployerName">Employer Name:</label>
+            <input type="text" name="EmployerName">
+            <br>
+            <label id="EmployerAddress">Employer Address:</label>
+            <ul id="EmployerAddrList">
+                <li>
+                    <label for="EmployerStreet">Street:</label>
+                    <input type="text" name="EmployerStreet" required>
+                </li>
+                <li>
+                    <label for="EmployerCity">City:</label>
+                    <input type="text" name="EmployerCity" required>
+                </li>
+                <li>
+                    <label for="EmployerState">State:</label>
+                    <input type="text" name="EmployerState" required>
+                </li>
+                <li>
+                    <label for="EmployerZip">Zip Code:</label>
+                    <input type="text" name="EmployerZip" required>
+                </li>
+                <li>
+                    <label for="EmployerCountry">Country:</label>
+                    <input type="text" name="EmployerCountry" required>
+                </li>
+            </ul>
+            <label for="Description">Description</label>
+            <input type="text" name="Description">
+            <br>
+            <label id="StartDate">Start Date:</label>
+            <br>
+            <label for="EmployerStartMonth">Month:</label>
+            <input type="text" name="EmployerStartMonth">
+            <label for="EmployerStartDay">Day:</label>
+            <input type="number" name="EmployerStartDay" min="1" max="31">
+            <label for="EmployerStartYear">Year:</label>
+            <input type="number" name="EmployerStartYear" min="1900" max="2100">  
+            <br>
+            <label id="EmployerEndDate">End Date:</label>
+            <input type="checkbox" name="EmployerEndCurrent" value="Current">Present
+            <br>
+            <label for="EmployerEndMonth">Month:</label>
+            <input type="text" name="EmployerEndMonth">
+            <label for="EmployerEndDay">Day:</label>
+            <input type="number" name="EmployerEndDay" min="1" max="31">
+            <label for="EmployerEndYear">Year:</label>
+            <input type="number" name="EmployerEndYear" min="1900" max="2100">
+		</fieldset>
+		<fieldset id="education_0">
+            <legend>Education</legend>
+            <label for="EducationName">Name:</label>
+            <input type="text" name="EducationName">
+            <br>
+            <label id="EducationAddress">Education Address:</label>
+            <ul id="EducationAddrList">
+                <li>
+                    <label for="EducationStreet">Street:</label>
+                    <input type="text" name="EducationStreet" required>
+                </li>
+                <li>
+                    <label for="EducationCity">City:</label>
+                    <input type="text" name="EducationCity" required>
+                </li>
+                <li>
+                    <label for="EducationState">State:</label>
+                    <input type="text" name="EducationState" required>
+                </li>
+                <li>
+                    <label for="EducationZip">Zip Code:</label>
+                    <input type="text" name="EducationZip" required>
+                </li>
+                <li>
+                    <label for="EducationCountry">Country:</label>
+                    <input type="text" name="EducationCountry" required>
+                </li>
+            </ul>
+            <label id="EducationStartDate">Start Date:</label>
+            <br>
+            <label for="EducationStartMonth">Month:</label>
+            <input type="text" name="EducationStartMonth">
+            <label for="EducationStartDay">Day:</label>
+            <input type="number" name="EducationStartDay" min="1" max="31">
+            <label for="EducationStartYear">Year:</label>
+            <input type="number" name="EducationStartYear" min="1900" max="2100">  
+            <br>
+            <label id="EducationEndDate">End Date:</label>
+            <input type="checkbox" name="EducationEndCurrent" value="Current">Present
+            <br>
+            <label for="EducationEndMonth">Month:</label>
+            <input type="text" name="EducationEndMonth">
+            <label for="EducationEndDay">Day:</label>
+            <input type="number" name="EducationEndDay" min="1" max="31">
+            <label for="EducationEndYear">Year:</label>
+            <input type="number" name="EducationEndYear" min="1900" max="2100"> 
+            <br>
+            <label for="DegreeName">Degree Name:</label>
+            <input type="text" name="DegreeName">
+            <label for="DegreeGPA">Degree GPA:</label>
+            <input type="number" name="DegreeGPA">
+            <input type="checkbox" name="DegreeHonors" value="True">Honors
+		</fieldset>
+		
+	    <input type = "button" value="Download" onclick="Submit()">
+        <input type = "button" value="Clear" onclick="clearForm()">
+        <input type = "button" value="Fill with Test Values" onclick="launchTestForm()">
+	</div>
+</body>
+</html>

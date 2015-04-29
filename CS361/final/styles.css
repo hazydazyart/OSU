@@ -1,0 +1,67 @@
+body {
+	width: 90%;
+	margin: 20px auto;
+	background: #193441;
+	font-family: sans-serif;
+        font-color: #212623;
+}
+
+#main {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+        padding: 15px;
+        background-color: #D1DBBD;
+        -moz-border-radius: 15px;
+        border-radius: 15px;
+        border-style: solid;
+        border-width: 10px;
+        border-color: #91AA9D;
+}
+
+form {
+	border: none;
+	margin: 0;
+	padding: 1em;
+}
+
+fieldset {
+    margin-top: 10px
+}
+
+
+legend {
+	font-size: 20px;
+}
+
+label {
+	display: inline-block;
+	text-align: right;
+}
+
+input, textarea {
+	font: 1.2em sans-serif;
+	border: 1px solid #999;
+}
+
+input:invalid {
+	background-color: #ffdddd;
+}
+  
+input:valid {
+	background-color: #ddffdd;
+}
+  
+input:required {
+	border-color: #800000;
+	border-width: 1px;
+} 
+
+h1 {
+        font-size: 2.5em;
+}
+
+h3 {
+        font-size: 2em;
+}
