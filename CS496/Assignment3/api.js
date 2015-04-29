@@ -2,9 +2,7 @@
 // API backend written in Javascript using NodeJS with Express, Dynasty, body-parser and multer libraries
 
 var credentials = {
-	accessKeyId: 'AKIAILSCI2WZ2PN33VWA', 
-	secretAccessKey: '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',
-	region: 'us-west-2'
+	--
 };
 
 var dynasty = require('dynasty')(credentials); // For interactions with DynamoDB
@@ -12,7 +10,7 @@ var express = require('express'); // For HTTP action handling
 var bodyParser = require('body-parser'); // For POST requests
 var multer = require('multer'); // For POST requests
 var AWS = require('aws-sdk');  // For interactions with DynamoDB
-AWS.config.update({accessKeyId: 'AKIAIL5BJLEZF3EAQ37A', secretAccessKey: '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'});
+AWS.config.update({accessKeyId: '--', secretAccessKey: '--'});
 AWS.config.region = 'us-west-2';	
 var dynamodb = new AWS.DynamoDB();
 var app = express();
